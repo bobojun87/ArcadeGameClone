@@ -74,8 +74,10 @@ var Menu = function (gameMenu, j) {
     this.name = gameMenu;
     this.x = 253;
     this.y = 200 + 60 * j;
-    this.onMouse = false;
+    this.mouseMove = false;
+    this.gamePause = true;
 }
+
 //显示菜单
 Menu.prototype.render = function() {
     
@@ -87,7 +89,7 @@ Menu.prototype.render = function() {
     ctx.fillStyle = "white";
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
-    if(this.onMouse == true){
+    if(this.mouseMove == true){
         ctx.restore();
     }
     this.width = ctx.measureText(this.name).width;
@@ -123,8 +125,23 @@ document.addEventListener("mousemove", function(e){
     //var canvas = document.querySelector("canvas");
     this.x = e.clientX - canvas.offsetLeft;
     this.y = e.clientY;
-    //console.log(this.x + "," + this.y);
     checkMenuPos(this.x, this.y);
+    menu.render();
+});
+document.addEventListener("mousedown", function(){
+    var menuGS = allMenus[0];
+    if(menuGS.mouseMove == true){
+        menuGS.gamePause = false;
+    }else{
+        menuGS.gamePause = true;
+    }
+    console.log(menuGS.gamePause); 
+    // allMenus.forEach(function(menu){
+    //     if(menu.mousemove == true && menu.name == "GAME START"){
+    //         gamePause = false;
+    //     }
+    //     console.log(menu.mousemove + "----" + gamePause);
+    // });
 });
 //检测鼠标位置在哪个菜单上
 function checkMenuPos(x, y) {
@@ -134,14 +151,12 @@ function checkMenuPos(x, y) {
             menuY = menu.y - 60;;
         var posX = x - menuX,
             posY = y - menuY;
-        console.log(menuX);
         if(posX > 0 && posX < menuWidth && posY > 20 && posY < 60){
-            menu.onMouse = true;
-            menu.render();
+            menu.mouseMove = true;
         }else{
-            menu.onMouse = false;
-            menu.render();
+            menu.mouseMove = false;
         }
+        
     });
 }
 

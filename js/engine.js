@@ -21,8 +21,6 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    var gamePause = false;
-
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
@@ -39,12 +37,13 @@ var Engine = (function(global) {
         /* 调用我们的 update / render 函数， 传递事件间隙给 update 函数因为这样
          * 可以使动画更加顺畅。
          */
+        console.log(allMenus[0].gamePause);
         update(dt);
         render();
 
         /* 设置我们的 lastTime 变量，它会被用来决定 main 函数下次被调用的事件。 */
         lastTime = now;
-
+        //console.log(gamePause);
         /* 在浏览准备好调用重绘下一个帧的时候，用浏览器的 requestAnimationFrame 函数
          * 来调用这个函数
          */
@@ -66,7 +65,7 @@ var Engine = (function(global) {
      * 注释了，你可以在这里实现，也可以在 app.js 对应的角色类里面实现。
      */
     function update(dt) {
-        if (gamePause == false) {
+        if (allMenus[0].gamePause == true) {
             return;
         }
         updateEntities(dt);
@@ -99,13 +98,8 @@ var Engine = (function(global) {
                     Resources.onReady(init);
                     player.x = 200;
                     player.y = 405;
-                }, 50);
-                //clearTimeout(playerPos);
-		        // player.x = 200;
-		        // player.y = 405;  
-		    }else{
-
-            }
+                }, 50); 
+		    }
     	});
     }
     /* 这个函数做了一些游戏的初始渲染，然后调用 renderEntities 函数。记住，这个函数
@@ -138,7 +132,7 @@ var Engine = (function(global) {
             }
         }
 
-        if (gamePause == false) {
+        if (allMenus[0].gamePause == true) {
             allMenus.forEach(function(menu) {
                 menu.render();
             });
