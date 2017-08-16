@@ -69,6 +69,33 @@ Player.prototype.handleInput = function(allowedKey){
 
 };
 
+//菜单类
+var Menu = function (gameMenu, j) {
+    this.name = gameMenu;
+    this.x = 253;
+    this.y = 200 + 60 * j;
+    this.onMouse = false;
+}
+//显示菜单
+Menu.prototype.render = function() {
+    
+    ctx.fillStyle = "blue";
+    ctx.save();
+
+    ctx.font = "36pt Impact";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    if(this.onMouse == true){
+        ctx.restore();
+    }
+    this.width = ctx.measureText(this.name).width;
+    //console.log(this.width);
+    ctx.fillText(this.name, this.x, this.y);
+    ctx.strokeText(this.name, this.x, this.y);
+}
+
 // 定义数组，实例化敌人的对象放进数组
 var allEnemies = [];
 for (var i = 0; i < 5; i++) {
@@ -78,6 +105,45 @@ for (var i = 0; i < 5; i++) {
 //实例化玩家对象
 var player = new Player();
 
+//定义菜单对象数组
+var allMenus = [];
+//定义菜单数组
+var gameMenu = [
+    "GAME START",
+    "OPTION",
+    "EXIT"
+];
+//实例化菜单对象
+for (var j = 0; j < gameMenu.length; j++) {
+    var menu = new Menu(gameMenu[j], j);
+    allMenus.push(menu);
+}
+
+document.addEventListener("mousemove", function(e){
+    //var canvas = document.querySelector("canvas");
+    this.x = e.clientX - canvas.offsetLeft;
+    this.y = e.clientY;
+    //console.log(this.x + "," + this.y);
+    checkMenuPos(this.x, this.y);
+});
+//检测鼠标位置在哪个菜单上
+function checkMenuPos(x, y) {
+    allMenus.forEach(function(menu){
+        var menuWidth = menu.width;
+        var menuX = menu.x - menuWidth / 2,
+            menuY = menu.y - 60;;
+        var posX = x - menuX,
+            posY = y - menuY;
+        console.log(menuX);
+        if(posX > 0 && posX < menuWidth && posY > 20 && posY < 60){
+            menu.onMouse = true;
+            menu.render();
+        }else{
+            menu.onMouse = false;
+            menu.render();
+        }
+    });
+}
 
 // 监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到
 // Play.handleInput()方法里面。

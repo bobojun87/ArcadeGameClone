@@ -21,6 +21,8 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
+    var gamePause = false;
+
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
@@ -64,6 +66,9 @@ var Engine = (function(global) {
      * 注释了，你可以在这里实现，也可以在 app.js 对应的角色类里面实现。
      */
     function update(dt) {
+        if (gamePause == false) {
+            return;
+        }
         updateEntities(dt);
         checkCollisions();
     }
@@ -89,10 +94,18 @@ var Engine = (function(global) {
 		        absY = Math.abs(enY - plY);
 
 		    if (absX <= 70 && absY <= 50) {
-		        //alert("不幸身亡");
-		        player.x = 200;
-		        player.y = 405;
-		    }
+                var playerPos = setTimeout(function () {
+                    //alert("不幸身亡");
+                    Resources.onReady(init);
+                    player.x = 200;
+                    player.y = 405;
+                }, 50);
+                //clearTimeout(playerPos);
+		        // player.x = 200;
+		        // player.y = 405;  
+		    }else{
+
+            }
     	});
     }
     /* 这个函数做了一些游戏的初始渲染，然后调用 renderEntities 函数。记住，这个函数
@@ -125,7 +138,14 @@ var Engine = (function(global) {
             }
         }
 
-        renderEntities();
+        if (gamePause == false) {
+            allMenus.forEach(function(menu) {
+                menu.render();
+            });
+        }else{
+            renderEntities();
+        }
+
     }
 
     /* 这个函数会在每个时间间隙被 render 函数调用。他的目的是分别调用你在 enemy 和 player
@@ -145,7 +165,6 @@ var Engine = (function(global) {
      * 函数调用一次。
      */
     function reset() {
-        // 空操作
         
     }
 
@@ -165,4 +184,5 @@ var Engine = (function(global) {
      * 对象。从而开发者就可以在他们的app.js文件里面更容易的使用它。
      */
     global.ctx = ctx;
+    global.canvas = canvas;
 })(this);
