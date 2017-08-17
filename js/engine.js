@@ -37,7 +37,6 @@ var Engine = (function(global) {
         /* 调用我们的 update / render 函数， 传递事件间隙给 update 函数因为这样
          * 可以使动画更加顺畅。
          */
-        console.log(allMenus[0].gamePause);
         update(dt);
         render();
 
@@ -80,7 +79,13 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+
         player.update();
+
+        allStudents.forEach(function(student){
+            student.update(dt);
+        });
+        
     }
     //检测碰撞函数
     function checkCollisions(){
@@ -95,7 +100,6 @@ var Engine = (function(global) {
 		    if (absX <= 70 && absY <= 50) {
                 var playerPos = setTimeout(function () {
                     //alert("不幸身亡");
-                    Resources.onReady(init);
                     player.x = 200;
                     player.y = 405;
                 }, 50); 
@@ -146,21 +150,37 @@ var Engine = (function(global) {
      * 对象中定义的 render 方法。
      */
     function renderEntities() {
-        /* 遍历在 allEnemies 数组中存放的作于对象然后调用你事先定义的 render 函数 */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
+        if (player.y < 10) {
+            allStudents.forEach(function(student){
+                student.render();
+            });
+        }else{
+            /* 遍历在 allEnemies 数组中存放的作于对象然后调用你事先定义的 render 函数 */
+            allEnemies.forEach(function(enemy) {
+                enemy.render();
+            });
 
-        player.render();
+            player.render();
+        }
     }
 
-    /* 这个函数现在没干任何事，但是这会是一个好地方让你来处理游戏重置的逻辑。可能是一个
-     * 从新开始游戏的按钮，也可以是一个游戏结束的画面，或者其它类似的设计。它只会被 init()
-     * 函数调用一次。
-     */
+    //重置player对象和enemy对象
     function reset() {
+        allEnemies.forEach(function(enemy) {
+            enemy.x = -100;
+            enemy.y = Math.floor(Math.random() * 3) * 85 + 90;
+            enemy.speed = 50 + Math.random() * 50;
+        });
         
+        player.x = 200;
+        player.y = 405;
     }
+
+    //重新开始按钮事件，当点击按钮时清空画布并重新开始刷新画布
+    document.getElementById("reset").addEventListener("click", function(){
+        reset();
+        //document.getElementById("message").innerHTML = "游戏准备";
+    });
 
     /* 紧接着我们来加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
      * 那么党这些图片都已经加载完毕的时候游戏就会开始。
@@ -170,7 +190,12 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
     ]);
     Resources.onReady(init);
 

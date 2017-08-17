@@ -32,6 +32,7 @@ var Player = function(){
     this.x = 200;
     this.y = 405;
 };
+
 //限定玩家的移动范围
 Player.prototype.update = function(){
     if (this.x < 0) {
@@ -44,12 +45,17 @@ Player.prototype.update = function(){
         this.y = 405;
     }
 };
+
 //负责在屏幕上画出玩家
 Player.prototype.render = function(){
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+
 //玩家的动作,定义每次触发键盘事件上下左右移动的距离
 Player.prototype.handleInput = function(allowedKey){
+    if (this.y < 10) {
+        return;
+    }
     switch (allowedKey)
     {
         case 'left':
@@ -69,16 +75,17 @@ Player.prototype.handleInput = function(allowedKey){
 
 };
 
-//菜单类
+//游戏菜单类
 var Menu = function (gameMenu, j) {
     this.name = gameMenu;
     this.x = 253;
     this.y = 200 + 60 * j;
-    this.mouseMove = false;
-    this.gamePause = true;
+    this.mouseMove = false; //鼠标移动到菜单范围内时的判断true为鼠标滑动到菜单文字上
+    this.gamePause = true;  //控制画布刷新的变量，true为画布暂停刷新
+    this.gameContinue = false;//监控暂停按钮事件，true为触发暂停按钮事件
 }
 
-//显示菜单
+//显示游戏菜单
 Menu.prototype.render = function() {
     
     ctx.fillStyle = "blue";
@@ -92,8 +99,10 @@ Menu.prototype.render = function() {
     if(this.mouseMove == true){
         ctx.restore();
     }
+    if (this.gameContinue == true) {
+        this.name = "CONTINUE";
+    }
     this.width = ctx.measureText(this.name).width;
-    //console.log(this.width);
     ctx.fillText(this.name, this.x, this.y);
     ctx.strokeText(this.name, this.x, this.y);
 }
@@ -104,23 +113,27 @@ for (var i = 0; i < 5; i++) {
     var enemy = new Enemy();
     allEnemies.push(enemy);
 }
+
 //实例化玩家对象
 var player = new Player();
 
 //定义菜单对象数组
 var allMenus = [];
-//定义菜单数组
+
+//定义菜单字典数组
 var gameMenu = [
     "GAME START",
     "OPTION",
     "EXIT"
 ];
+
 //实例化菜单对象
 for (var j = 0; j < gameMenu.length; j++) {
     var menu = new Menu(gameMenu[j], j);
     allMenus.push(menu);
 }
 
+//鼠标移动事件，鼠标移动时游戏菜单文字颜色变化
 document.addEventListener("mousemove", function(e){
     //var canvas = document.querySelector("canvas");
     this.x = e.clientX - canvas.offsetLeft;
@@ -128,21 +141,25 @@ document.addEventListener("mousemove", function(e){
     checkMenuPos(this.x, this.y);
     menu.render();
 });
+
+//鼠标按下事件，鼠标按下相应菜单时触发事件，目前只处理了游戏开始/继续菜单事件
 document.addEventListener("mousedown", function(){
     var menuGS = allMenus[0];
     if(menuGS.mouseMove == true){
         menuGS.gamePause = false;
-    }else{
-        menuGS.gamePause = true;
+        document.getElementById("message").innerHTML = "游戏开始";
     }
-    console.log(menuGS.gamePause); 
-    // allMenus.forEach(function(menu){
-    //     if(menu.mousemove == true && menu.name == "GAME START"){
-    //         gamePause = false;
-    //     }
-    //     console.log(menu.mousemove + "----" + gamePause);
-    // });
 });
+
+//暂停按钮事件，当点击暂停按钮时画布停止刷新，游戏菜单文字变化
+document.getElementById("pause").addEventListener("click", function(){
+    if(allMenus[0].gamePause != true){
+        allMenus[0].gamePause = true;
+        allMenus[0].gameContinue = true;
+        document.getElementById("message").innerHTML = "游戏暂停";
+    }
+});
+
 //检测鼠标位置在哪个菜单上
 function checkMenuPos(x, y) {
     allMenus.forEach(function(menu){
@@ -171,3 +188,46 @@ document.addEventListener('keyup', function(e) {
     };
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+/*
+*游戏胜利后动画效果
+*动画需要的对象类
+*/
+var Student = function(sprite, k) {
+
+    this.sprite = sprite;
+
+    this.angle = k * 1.2 ; // 旋转的角度
+    this.centerX = 200;
+    this.centerY = 170;
+    this.radius = 150; // 定义半径
+    this.speed = 0.02; // 每帧旋转角度的增加值
+}
+//绕圆运动
+Student.prototype.update = function(dt) {
+   this.x = this.centerX + Math.sin(this.angle)*this.radius;
+   this.y = this.centerY + Math.cos(this.angle)*this.radius;
+
+   //角度增加
+   this.angle += this.speed;
+}
+//在画布上显示
+Student.prototype.render = function(){
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    document.getElementById("message").innerHTML = "成功入河！";
+};
+//人物图片数组
+var studentArr = [
+    'images/char-boy.png',
+    'images/char-cat-girl.png',
+    'images/char-horn-girl.png',
+    'images/char-pink-girl.png',
+    'images/char-princess-girl.png'
+];
+//人物对象数组
+var allStudents = [];
+//实例化人物对象
+for (var k = 0; k < studentArr.length; k++) {
+    var student = new Student(studentArr[k], k);
+    allStudents.push(student);
+}
