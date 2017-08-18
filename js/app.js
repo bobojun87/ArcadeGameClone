@@ -1,8 +1,14 @@
+var ENEMY_START_X = -100,   //敌人起始位置x坐标
+    PLAYER_START_X = 200,   //玩家起始位置x坐标
+    PLAYER_START_Y = 405,   //玩家起始位置y坐标
+    PLAYER_MOVE_X = 100,    //玩家x坐标一次移动距离
+    PLAYER_MOVE_Y = 83;     //玩家y坐标一次移动距离
+
 // 这是我们的玩家要躲避的敌人 
 var Enemy = function() {
     // 敌人的图片或者雪碧图，用一个我们提供的工具函数来轻松的加载文件
     this.sprite = 'images/enemy-bug.png';
-    this.x = -100;
+    this.x = ENEMY_START_X;
     this.y = Math.floor(Math.random() * 3) * 85 + 90;
     this.speed = 50 + Math.random() * 50;
 };
@@ -11,8 +17,8 @@ var Enemy = function() {
 // 参数: dt ，表示时间间隙
 Enemy.prototype.update = function(dt) {
     // 判定Enemy对象位置，使其无限循环在屏幕内移动
-    if (this.x > 505) {
-        this.x = -100;
+    if (this.x > ctx.canvas.width) {
+        this.x = ENEMY_START_X;
         this.y = Math.floor(Math.random() * 3) * 85 + 90;
         this.speed = 50 + Math.random() * 50;
     }
@@ -29,20 +35,20 @@ Enemy.prototype.render = function() {
 // 玩家类
 var Player = function(){
     this.sprite = 'images/char-boy.png';
-    this.x = 200;
-    this.y = 405;
+    this.x = PLAYER_START_X;
+    this.y = PLAYER_START_Y;
 };
 
 //限定玩家的移动范围
 Player.prototype.update = function(){
     if (this.x < 0) {
         this.x = 0;
-    }else if(this.x > 400){
-        this.x = 400;
+    }else if(this.x > ctx.canvas.width - 105){
+        this.x = ctx.canvas.width - 105;
     }else if(this.y < -10){
         this.y = -10;
-    }else if (this.y > 405) {
-        this.y = 405;
+    }else if (this.y > PLAYER_START_Y) {
+        this.y = PLAYER_START_Y;
     }
 };
 
@@ -59,16 +65,16 @@ Player.prototype.handleInput = function(allowedKey){
     switch (allowedKey)
     {
         case 'left':
-            this.x -= 100;
+            this.x -= PLAYER_MOVE_X;
             break;
         case 'right':
-            this.x += 100;
+            this.x += PLAYER_MOVE_X;
             break;
         case 'up':
-            this.y -= 83;
+            this.y -= PLAYER_MOVE_Y;
             break;
         case 'down':
-            this.y += 83;
+            this.y += PLAYER_MOVE_Y;
             break;
     }
 
@@ -165,7 +171,7 @@ function checkMenuPos(x, y) {
     allMenus.forEach(function(menu){
         var menuWidth = menu.width;
         var menuX = menu.x - menuWidth / 2,
-            menuY = menu.y - 60;;
+            menuY = menu.y - 60;
         var posX = x - menuX,
             posY = y - menuY;
         if(posX > 0 && posX < menuWidth && posY > 20 && posY < 60){

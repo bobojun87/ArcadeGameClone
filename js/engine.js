@@ -100,8 +100,8 @@ var Engine = (function(global) {
 		    if (absX <= 70 && absY <= 50) {
                 var playerPos = setTimeout(function () {
                     //alert("不幸身亡");
-                    player.x = 200;
-                    player.y = 405;
+                    player.x = PLAYER_START_X;
+                    player.y = PLAYER_START_Y;
                 }, 50); 
 		    }
     	});
@@ -172,8 +172,8 @@ var Engine = (function(global) {
             enemy.speed = 50 + Math.random() * 50;
         });
         
-        player.x = 200;
-        player.y = 405;
+        player.x = PLAYER_START_X;
+        player.y = PLAYER_START_Y;
     }
 
     //重新开始按钮事件，当点击按钮时清空画布并重新开始刷新画布
