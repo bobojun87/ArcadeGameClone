@@ -4,16 +4,16 @@ var ENEMY_START_X = -100,   //敌人起始位置x坐标
     PLAYER_MOVE_X = 100,    //玩家x坐标一次移动距离
     PLAYER_MOVE_Y = 83;     //玩家y坐标一次移动距离
 
-// 这是我们的玩家要躲避的敌人 
+// 这是玩家要躲避的敌人 
 var Enemy = function() {
-    // 敌人的图片或者雪碧图，用一个我们提供的工具函数来轻松的加载文件
+    // 敌人的图片或者雪碧图，图片加载工具函数来轻松的加载文件
     this.sprite = 'images/enemy-bug.png';
     this.x = ENEMY_START_X;
     this.y = Math.floor(Math.random() * 3) * 85 + 90;
     this.speed = 50 + Math.random() * 50;
 };
 
-// 此为游戏必须的函数，用来更新敌人的位置
+// 用来更新敌人的位置
 // 参数: dt ，表示时间间隙
 Enemy.prototype.update = function(dt) {
     // 判定Enemy对象位置，使其无限循环在屏幕内移动
@@ -27,7 +27,7 @@ Enemy.prototype.update = function(dt) {
     this.x += this.speed * dt;
 };
 
-// 此为游戏必须的函数，用来在屏幕上画出敌人，
+// 用来在屏幕上画出敌人，
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 80, 130);
 };

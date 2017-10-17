@@ -1,17 +1,16 @@
 /* Engine.js
 * 这个文件提供了游戏循环玩耍的功能（更新敌人和渲染）
- * 在屏幕上画出出事的游戏面板，然后调用玩家和敌人对象的 update / render 函数（在 app.js 中定义的）
+ * 在屏幕上画出初始的游戏面板，然后调用玩家和敌人对象的 update / render 函数（在 app.js 中定义的）
  *
- * 一个游戏引擎的工作过程就是不停的绘制整个游戏屏幕，和小时候你们做的 flipbook 有点像。当
- * 玩家在屏幕上移动的时候，看上去就是图片在移动或者被重绘。但这都是表面现象。实际上是整个屏幕
- * 被重绘导致这样的动画产生的假象
+ * 一个游戏引擎的工作过程就是不停的绘制整个游戏屏幕。当
+ * 玩家在屏幕上移动的时候，整个屏幕被重绘产生动画效果
 
  * 这个引擎是可以通过 Engine 变量公开访问的，而且它也让 canvas context (ctx) 对象也可以
  * 公开访问，以此使编写app.js的时候更加容易
  */
 
 var Engine = (function(global) {
-    /* 实现定义我们会在这个作用于用到的变量
+    /* 定义会在这个作用域用到的变量
      * 创建 canvas 元素，拿到对应的 2D 上下文
      * 设置 canvas 元素的高/宽 然后添加到dom中
      */
@@ -27,20 +26,19 @@ var Engine = (function(global) {
 
     /* 这个函数是整个游戏的主入口，负责适当的调用 update / render 函数 */
     function main() {
-        /* 如果你想要更平滑的动画过度就需要获取时间间隙。因为每个人的电脑处理指令的
+        /* 如果想要更平滑的动画过度就需要获取时间间隙。因为每个人的电脑处理指令的
          * 速度是不一样的，我们需要一个对每个人都一样的常数（而不管他们的电脑有多快）
-         * 就问你屌不屌！
          */
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
-        /* 调用我们的 update / render 函数， 传递事件间隙给 update 函数因为这样
+        /* 调用 update / render 函数， 传递时间间隙给 update 函数因为这样
          * 可以使动画更加顺畅。
          */
         update(dt);
         render();
 
-        /* 设置我们的 lastTime 变量，它会被用来决定 main 函数下次被调用的事件。 */
+        /* 设置 lastTime 变量，它会被用来决定 main 函数下次被调用的时间。 */
         lastTime = now;
         //console.log(gamePause);
         /* 在浏览准备好调用重绘下一个帧的时候，用浏览器的 requestAnimationFrame 函数
@@ -58,11 +56,7 @@ var Engine = (function(global) {
         main();
     }
 
-    /* 这个函数被 main 函数（我们的游戏主循环）调用，它本身调用所有的需要更新游戏角色
-     * 数据的函数，取决于你怎样实现碰撞检测（意思是如何检测两个角色占据了同一个位置，
-     * 比如你的角色死的时候），你可能需要在这里调用一个额外的函数。现在我们已经把这里
-     * 注释了，你可以在这里实现，也可以在 app.js 对应的角色类里面实现。
-     */
+    /* 这个函数被 main 函数调用，它本身调用所有的需要更新游戏角色 数据的函数 */
     function update(dt) {
         if (allMenus[0].gamePause == true) {
             return;
@@ -106,10 +100,8 @@ var Engine = (function(global) {
 		    }
     	});
     }
-    /* 这个函数做了一些游戏的初始渲染，然后调用 renderEntities 函数。记住，这个函数
-     * 在每个游戏的时间间隙都会被调用一次（或者说游戏引擎的每个循环），因为这就是游戏
-     * 怎么工作的，他们就像是那种每一页上都画着不同画儿的书，快速翻动的时候就会出现是
-     * 动画的幻觉，但是实际上，他们只是不停的在重绘整个屏幕。
+    /* 这个函数做了一些游戏的初始渲染，然后调用 renderEntities 函数。这个函数
+     * 在每个游戏的时间间隙都会被调用一次（或者说游戏引擎的每个循环）。
      */
     function render() {
         /* 这个数组保存着游戏关卡的特有的行对应的图片相对路径。 */
@@ -125,12 +117,12 @@ var Engine = (function(global) {
             numCols = 5,
             row, col;
 
-        /* 便利我们上面定义的行和列，用 rowImages 数组，在各自的各个位置绘制正确的图片 */
+        /* 遍历上面定义的行和列，用 rowImages 数组，在各自的各个位置绘制正确的图片 */
         for (row = 0; row < numRows; row++) {
             for (col = 0; col < numCols; col++) {
                 /* 这个 canvas 上下文的 drawImage 函数需要三个参数，第一个是需要绘制的图片
-                 * 第二个和第三个分别是起始点的x和y坐标。我们用我们事先写好的资源管理工具来获取
-                 * 我们需要的图片，这样我们可以享受缓存图片的好处，因为我们会反复的用到这些图片
+                 * 第二个和第三个分别是起始点的x和y坐标。用资源管理工具来获取
+                 * 需要的图片，这样可以享受缓存图片的好处，因为会反复的用到这些图片
                  */
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
@@ -155,7 +147,7 @@ var Engine = (function(global) {
                 student.render();
             });
         }else{
-            /* 遍历在 allEnemies 数组中存放的作于对象然后调用你事先定义的 render 函数 */
+            /* 遍历在 allEnemies 数组中存放的作于对象然后调用事先定义的 render 函数 */
             allEnemies.forEach(function(enemy) {
                 enemy.render();
             });
@@ -182,8 +174,8 @@ var Engine = (function(global) {
         //document.getElementById("message").innerHTML = "游戏准备";
     });
 
-    /* 紧接着我们来加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
-     * 那么党这些图片都已经加载完毕的时候游戏就会开始。
+    /* 加载需要来绘制游戏关卡的图片。然后把 init 方法设置为回调函数。
+     * 当这些图片都已经加载完毕的时候游戏就会开始。
      */
     Resources.load([
         'images/stone-block.png',
@@ -200,7 +192,7 @@ var Engine = (function(global) {
     Resources.onReady(init);
 
     /* 把 canvas 上下文对象绑定在 global 全局变量上（在浏览器运行的时候就是 window
-     * 对象。从而开发者就可以在他们的app.js文件里面更容易的使用它。
+     * 对象。从而可以在app.js文件里面更容易的使用它。
      */
     global.ctx = ctx;
     global.canvas = canvas;
